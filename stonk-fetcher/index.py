@@ -16,8 +16,9 @@ def index(event, context):
 
 def process(slack_request):
     param_text = slack_request['text']
-    text = parse(get_ticker_symbol(param_text), get_query_type(param_text))
-    print(text)
+    stock_text = parse(get_ticker_symbol(param_text), get_query_type(param_text))
+    print(stock_text)
+    text = '<@%s> fetched a quote with: `%s`\n%s' % (slack_request['user_id'], slack_request['command'], stock_text)
     send_text(slack_request['response_url'], text)
 
 def get_ticker_symbol(param_text):
@@ -48,30 +49,25 @@ def get_quote(ticker_symbol):
     print(ticker_info)
     ticker_name = ticker.info['shortName']
 
-    result = '%s (%s)' % (ticker_name, ticker_symbol.upper())
-    result += '\n'
+    result = '>%s (%s)\n' % (ticker_name, ticker_symbol.upper())
 
     current_price = ticker_info['regularMarketPrice']
     prev_price = ticker_info['regularMarketPreviousClose']
     chg = current_price - prev_price
     chg_pct = round(chg / prev_price * 100, 2)
     emoji = ':rocket:' if chg_pct > 0 else ':rocket-down:'
-    result += '%s (%s | %s%%) %s' % (current_price, round(chg, 2), chg_pct, emoji)
-    result += '\n'
+    result += '>%s (%s | %s%%) %s\n' % (current_price, round(chg, 2), chg_pct, emoji)
 
     day_low, day_hi = ticker_info['regularMarketDayLow'], ticker_info['regularMarketDayHigh']
-    result += 'Day low: %s, Day hi: %s' % (day_low, day_hi)
-    result += '\n'
+    result += '>Day low: %s, Day hi: %s\n' % (day_low, day_hi)
 
     low_52, hi_52 = ticker_info.get('fiftyTwoWeekLow'), ticker_info.get('fiftyTwoWeekHigh')
     if low_52 and hi_52:
-        result += '52 low: %s, 52 hi: %s' % (low_52, hi_52)
-        result += '\n'
+        result += '>52 low: %s, 52 hi: %s\n' % (low_52, hi_52)
 
     day_avg_50, day_avg_200 = ticker_info.get('fiftyDayAverage'), ticker_info.get('twoHundredDayAverage')
     if day_avg_50 and day_avg_200:
-        result += '50 day avg: %s, 200 day avg: %s' % (day_avg_50, day_avg_200)
-        result += '\n'
+        result += '>50 day avg: %s, 200 day avg: %s\n' % (day_avg_50, day_avg_200)
 
     return result
 

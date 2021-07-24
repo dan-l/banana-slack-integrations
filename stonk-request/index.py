@@ -20,8 +20,8 @@ def index(request):
     param_text = request.form['text']
     print(param_text)
 
-    slack_request = '%s %s' % (command, param_text)
-    print(slack_request)
+    slack_command_text = '%s %s' % (command, param_text)
+    print(slack_command_text)
 
     if not param_text:
         return ''
@@ -35,7 +35,9 @@ def index(request):
     topic_path = publisher.topic_path(project_id, topic_id)
     request = {
         'text': param_text,
-        'response_url': request.form['response_url']
+        'response_url': request.form['response_url'],
+        'user_id': request.form['user_id'],
+        'command': slack_command_text
     }
     data = json.dumps(request).encode("utf-8")
     publisher.publish(topic_path, data)
