@@ -1,0 +1,9 @@
+{
+  "name": "sample-pubsub",
+  "version": "0.0.1",
+  "dependencies": {
+    "@google-cloud/pubsub": "^0.18.0",
+    "@google-cloud/firestore": "^4.14.0",
+    "axios": "^0.21.1"
+  }
+}
